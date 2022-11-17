@@ -15,44 +15,40 @@ const concat = (
 	return resultArray;
 };
 
-export const createHasher = (options: {
-	random: (array: Uint8Array) => Uint8Array,
-	digest: (algorithm: "SHA-512", data: ArrayBuffer) => Promise<ArrayBuffer>,
-	equal: (a: Uint8Array, b: Uint8Array) => boolean 
-}) => {
-	const {
-		random,
-		digest,
-		equal,
-	} = options;
+const equal = (a: Uint8Array, b: Uint8Array) => {
+	const l = a.length;
 
-	const hash = async (
-		password: string, 
-		salt = random(new Uint8Array(SALT_SIZE))
-	) => new Uint8Array(
-		concat(
-			salt, 
-			new Uint8Array(
-				await digest(
-					"SHA-512", 
-					concat(salt, encoder.encode(password))
-				)
+	if (l !== b.length) return false;
+
+	for (let i = 0; i < l; ++i) {
+		if (a[i] !== b[i]) return false;
+	}
+
+	return true;
+}
+
+export const hash = async (
+	password: string,
+	salt = crypto.getRandomValues(new Uint8Array(SALT_SIZE))
+) => new Uint8Array(
+	concat(
+		salt,
+		new Uint8Array(
+			await crypto.subtle.digest(
+				"SHA-512",
+				concat(salt, encoder.encode(password))
 			)
 		)
-	);
+	)
+);
 
-	const verify = async (
-		hashedPassword: Uint8Array, 
-		unhashedPassword: string
-	) => equal(
-		await hash(
-			unhashedPassword, 
-			new Uint8Array(hashedPassword).subarray(0, SALT_SIZE)
-		), 
-		hashedPassword
-	);
-
-	return {
-		hash, verify
-	};
-};
+export const verify = async (
+	hashedPassword: Uint8Array,
+	unhashedPassword: string
+) => equal(
+	await hash(
+		unhashedPassword,
+		new Uint8Array(hashedPassword).subarray(0, SALT_SIZE)
+	),
+	hashedPassword
+);

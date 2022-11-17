@@ -20,14 +20,14 @@ const buildEsm = () => build({
 	...shared,
 	format: "esm",
 	outfile: esm,
-	target: ["esnext", "node16.0.0"],
+	target: ["esnext", "chrome97"],
 });
 
 const buildCjs = () => build({
 	...shared,
 	format: "cjs",
 	outfile: cjs,
-	target: ["esnext", "node16.0.0"],
+	target: ["esnext", "chrome97"],
 });
 
 const buildTypes = () => new Generator({

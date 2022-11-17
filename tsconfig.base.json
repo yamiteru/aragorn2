@@ -3,6 +3,7 @@
 		"strict": true,
 		"target": "ESNext",
 		"moduleResolution": "node",
+		"lib": ["ESNext","WebWorker"],
 		"esModuleInterop": true,
 		"declaration": true,
 		"resolveJsonModule": true
