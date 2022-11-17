@@ -1,6 +1,6 @@
 {
   "name": "aragorn2",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "author": "Miroslav Vršecký <yamiteru@icloud.com>",
   "description": "Password hashing library based on WebCrypto",
