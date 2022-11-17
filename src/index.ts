@@ -1,4 +1,5 @@
-const encoder = new TextEncoder();
+const encode = new TextEncoder().encode;
+const decode = new TextDecoder().decode;
 const SALT_SIZE = 32;
 
 const concat = (
@@ -30,25 +31,33 @@ const equal = (a: Uint8Array, b: Uint8Array) => {
 export const hash = async (
 	password: string,
 	salt = crypto.getRandomValues(new Uint8Array(SALT_SIZE))
-) => new Uint8Array(
-	concat(
-		salt,
-		new Uint8Array(
-			await crypto.subtle.digest(
-				"SHA-512",
-				concat(salt, encoder.encode(password))
+) => decode(
+	new Uint8Array(
+		concat(
+			salt,
+			new Uint8Array(
+				await crypto.subtle.digest(
+					"SHA-512",
+					concat(salt, encode(password))
+				)
 			)
 		)
 	)
 );
 
 export const verify = async (
-	hashedPassword: Uint8Array,
+	hashedPassword: string,
 	unhashedPassword: string
-) => equal(
-	await hash(
-		unhashedPassword,
-		new Uint8Array(hashedPassword).subarray(0, SALT_SIZE)
-	),
-	hashedPassword
-);
+) => {
+	const encodedPassword = encode(hashedPassword);
+
+	return equal(
+		encode(
+			await hash(
+				unhashedPassword,
+				new Uint8Array(encodedPassword).subarray(0, SALT_SIZE)
+			)
+		),
+		encodedPassword
+	);
+}
