@@ -1,6 +1,6 @@
 const SALT_SIZE = 32;
 
-const concat = (
+export const concat = (
 	firstArray: Uint8Array,
 	secondArray: Uint8Array
 ) => {
@@ -14,7 +14,7 @@ const concat = (
 	return resultArray;
 };
 
-const equal = (a: Uint8Array, b: Uint8Array) => {
+export const equal = (a: Uint8Array, b: Uint8Array) => {
 	const l = a.length;
 
 	if (l !== b.length) return false;
@@ -26,7 +26,7 @@ const equal = (a: Uint8Array, b: Uint8Array) => {
 	return true;
 }
 
-const stringToUint8Array = (value: string) => {
+export const stringToUint8Array = (value: string) => {
 	const length = value.length;
 	const array =	new Uint8Array(length);
 
@@ -37,7 +37,7 @@ const stringToUint8Array = (value: string) => {
 	return array;
 };
 
-const Uint8ArrayToString = (value: Uint8Array) => {
+export const Uint8ArrayToString = (value: Uint8Array) => {
 	const length = value.byteLength;
 	let string = "";
 
@@ -46,6 +46,21 @@ const Uint8ArrayToString = (value: Uint8Array) => {
 	}
 
 	return string;
+};
+
+export const hashRaw = async (
+	password: string,
+	salt = crypto.getRandomValues(new Uint8Array(SALT_SIZE))
+) => {
+	return concat(
+		salt,
+		new Uint8Array(
+			await crypto.subtle.digest(
+				"SHA-512",
+				concat(salt, stringToUint8Array(password))
+			)
+		)
+	);
 };
 
 export const hash = async (
@@ -65,6 +80,19 @@ export const hash = async (
 	);
 };
 
+export const verifyRaw = async (
+	hashedPassword: Uint8Array,
+	unhashedPassword: string
+) => {
+	return equal(
+		await hashRaw(
+			unhashedPassword,
+			hashedPassword.subarray(0, SALT_SIZE)
+		),
+		hashedPassword
+	);
+}
+
 export const verify = async (
 	hashedPassword: string,
 	unhashedPassword: string
@@ -80,5 +108,5 @@ export const verify = async (
 		),
 		password
 	);
-}
+};
 
