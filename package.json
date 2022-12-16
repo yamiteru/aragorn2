@@ -1,6 +1,6 @@
 {
   "name": "aragorn2",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "MIT",
   "author": "Miroslav Vršecký <yamiteru@icloud.com>",
   "description": "Password hashing library based on WebCrypto",
@@ -34,9 +34,11 @@
   "scripts": {
     "build": "yarn clean && ts-node scripts/build.ts && tsc --emitDeclarationOnly --outDir dist",
     "clean": "rimraf dist",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "yarn build",
+		"dev": "ts-node src/index.ts"
   },
   "devDependencies": {
+    "@types/node": "^18.11.15",
     "esbuild": "0.15.13",
     "npm-dts": "1.3.12",
     "ts-node": "10.9.1",
