@@ -1,5 +1,3 @@
-import crypto from "crypto";
-
 const SALT_SIZE = 32;
 
 const concat = (
